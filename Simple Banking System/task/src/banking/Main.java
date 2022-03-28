@@ -13,40 +13,48 @@ public class Main {
     public static Map<String, CreditCard> savedAccounts = new HashMap<>();
     public static AccountDaoSqlite dao = new AccountDaoSqlite("jdbc:sqlite:card.s3db");
 
-    static boolean isTrue = false;
+
 
     public static void main(String[] args) {
 
-
-        boolean isTrue = false;
-        int choice = 0;
-        do {
-            if (isTrue == false) {
-                menu1();
-            } else {
-                break;
-            }
-            choice = scanner.nextInt();
-            switch (choice) {
-                case 1:
-                    createAnccount();
-                    break;
-                case 2:
-                    logIntoAccount();
-            }
-        } while (choice != 0);
+        firstMenu();
     }
 
-    public static void createAnccount() {
+    public static void firstMenu() {
+        String choice = "";
+
+        while (!choice.equals("0")) {
+
+            System.out.println("1. Create an account");
+            System.out.println("2. Log into account");
+            System.out.println("0. Exit");
+
+            choice = scanner.next();
+            switch (choice) {
+                case "1":
+                    createAnAccount();
+                    break;
+                case "2":
+                    logIntoAccount();
+                    break;
+                case "0":
+                    System.out.println("Bye!");
+                    System.exit(0);
+                    break;
+            }
+        }
+    }
+
+    public static void createAnAccount() {
         CreditCard card = new CreditCard();
         String cardNum ="";
         String pin ="";
         System.out.println("Your card number has been created");
         System.out.println("Your card number:");
-        cardNum = createAccountNumber(cardNum);
+        cardNum = card.createAccountNumber();
         System.out.println(cardNum);
         System.out.println("Your card PIN:");
-        pin = createPin(pin);
+        pin = card.createPin();
         System.out.println(pin);
         savedAccounts.put(cardNum, card);
         dao.saveAccountToDatabase(card);
@@ -99,7 +107,7 @@ public class Main {
             }
             else if (option == 0){
                 System.out.println("Bye!");
-                isTrue = true;
+                System.exit(0);
                 break;
             }
         }while(option!=0);

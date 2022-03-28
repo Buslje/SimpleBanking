@@ -10,7 +10,7 @@ public class CreditCard {
     private double balance;
 
 
-    public static String createAccountNumber(String cardNum) {
+    public static String createAccountNumber() {
         String bankNumber = "400000";
         int lowerAccountNumber = 100000000;
         int upperAccountNumber = 999999999;
@@ -33,7 +33,7 @@ public class CreditCard {
         return cardNum;
     }
 
-    public static String createPin(String pin) {
+    public static String createPin() {
         int lower = 1000;
         int upper = 9999;
         pin = String.valueOf(random.nextInt(upper - lower + 1) + lower);
