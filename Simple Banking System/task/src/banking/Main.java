@@ -11,17 +11,13 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
     static Random random = new Random();
     public static Map<String, CreditCard> savedAccounts = new HashMap<>();
-    static String fileName;
-    //public static CardDaoSqlite dao = new CardDaoSqlite("jdbc:sqlite:card.s3db");
+    public static AccountDaoSqlite dao = new AccountDaoSqlite("jdbc:sqlite:card.s3db");
 
     static boolean isTrue = false;
 
     public static void main(String[] args) {
 
-        fileName = "card.s3db";
 
-        createDatabase(fileName);
-        createTable(fileName);
         boolean isTrue = false;
         int choice = 0;
         do {
@@ -33,7 +29,7 @@ public class Main {
             choice = scanner.nextInt();
             switch (choice) {
                 case 1:
-                    createAccount();
+                    createAnccount();
                     break;
                 case 2:
                     logIntoAccount();
@@ -41,7 +37,7 @@ public class Main {
         } while (choice != 0);
     }
 
-    /*public static void createAnAccount() {
+    public static void createAnccount() {
         CreditCard card = new CreditCard();
         String cardNum ="";
         String pin ="";
@@ -53,35 +49,9 @@ public class Main {
         pin = createPin(pin);
         System.out.println(pin);
         savedAccounts.put(cardNum, card);
-        //dao.saveCreditCardToDatabase(card);
-    }*/
-    static void printData(CreditCard card) {
-
-        System.out.println();
-
-        System.out.println("Your card has been created");
-
-        System.out.println("Your card number:");
-        System.out.println(card.getCardNum());
-
-        System.out.println("Your card PIN:");
-        System.out.println(card.getPin());
-
+        dao.saveAccountToDatabase(card);
     }
 
-    static void createAccount() {
-
-        Insert app = new Insert(fileName);
-
-        CreditCard account = new CreditCard();
-
-        // Inserting data into an SQL database
-
-        app.insert(Long.parseLong(account.getCardNum()), Integer.parseInt(account.getPin()));
-
-        printData(account);
-
-    }
     public static void logIntoAccount() {
 
         boolean menu = false;
@@ -133,48 +103,6 @@ public class Main {
                 break;
             }
         }while(option!=0);
-    }
-    public static void createDatabase(String fileName) {
-
-        // Connection string
-
-        String url = "jdbc:sqlite:" + fileName;
-
-        try (Connection conn = DriverManager.getConnection(url)) {
-            if (conn != null) {
-                DatabaseMetaData meta = conn.getMetaData();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-    }
-
-    public static void createTable(String fileName) {
-
-        // Connection string
-
-        String url = "jdbc:sqlite:" + fileName;
-
-        // Creating table
-
-        String sql = "CREATE TABLE IF NOT EXISTS card (" +
-                "  `id` INTEGER NOT NULL PRIMARY KEY," +
-                "  `number` TEXT," +
-                "  `pin` TEXT," +
-                "  `balance` INTEGER DEFAULT 0"
-                + ");";
-
-        try (Connection conn = DriverManager.getConnection(url);
-             Statement stmt = conn.createStatement()) {
-
-            // Create new table
-
-            stmt.execute(sql);
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
     }
 }
 

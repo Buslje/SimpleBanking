@@ -7,7 +7,7 @@ public class CreditCard {
 
     private static String cardNum;
     private static String pin;
-
+    private double balance;
 
 
     public static String createAccountNumber(String cardNum) {
@@ -46,6 +46,9 @@ public class CreditCard {
 
     public static String getPin() {
         return pin;
+    }
+
+    public double getBalance() { return balance;
     }
 }
 
