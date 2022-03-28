@@ -1,10 +1,8 @@
 package banking;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.sql.*;
+import java.util.*;
 
 import static banking.CreditCard.*;
 
@@ -12,12 +10,18 @@ public class Main {
 
     static Scanner scanner = new Scanner(System.in);
     static Random random = new Random();
-    static List<String> accountInfo= new ArrayList<String>();
+    public static Map<String, CreditCard> savedAccounts = new HashMap<>();
+    static String fileName;
+    //public static CardDaoSqlite dao = new CardDaoSqlite("jdbc:sqlite:card.s3db");
 
     static boolean isTrue = false;
 
     public static void main(String[] args) {
 
+        fileName = "card.s3db";
+
+        createDatabase(fileName);
+        createTable(fileName);
         boolean isTrue = false;
         int choice = 0;
         do {
@@ -29,7 +33,7 @@ public class Main {
             choice = scanner.nextInt();
             switch (choice) {
                 case 1:
-                    createAnAccount();
+                    createAccount();
                     break;
                 case 2:
                     logIntoAccount();
@@ -37,7 +41,8 @@ public class Main {
         } while (choice != 0);
     }
 
-    public static void createAnAccount() {
+    /*public static void createAnAccount() {
+        CreditCard card = new CreditCard();
         String cardNum ="";
         String pin ="";
         System.out.println("Your card number has been created");
@@ -47,7 +52,35 @@ public class Main {
         System.out.println("Your card PIN:");
         pin = createPin(pin);
         System.out.println(pin);
-        setCardsAndPins(cardNum, pin);
+        savedAccounts.put(cardNum, card);
+        //dao.saveCreditCardToDatabase(card);
+    }*/
+    static void printData(CreditCard card) {
+
+        System.out.println();
+
+        System.out.println("Your card has been created");
+
+        System.out.println("Your card number:");
+        System.out.println(card.getCardNum());
+
+        System.out.println("Your card PIN:");
+        System.out.println(card.getPin());
+
+    }
+
+    static void createAccount() {
+
+        Insert app = new Insert(fileName);
+
+        CreditCard account = new CreditCard();
+
+        // Inserting data into an SQL database
+
+        app.insert(Long.parseLong(account.getCardNum()), Integer.parseInt(account.getPin()));
+
+        printData(account);
+
     }
     public static void logIntoAccount() {
 
@@ -57,8 +90,8 @@ public class Main {
         System.out.println("Enter your PIN:");
         String p = scanner.next();
 
-        for (String num: accountInfo){
-            if (num.equals(cn) && accountInfo.get(accountInfo.indexOf(num)+1).equals(p)) {
+        for (String card: savedAccounts.keySet()){
+            if (savedAccounts.get(card).getCardNum().equals(cn) && savedAccounts.get(card).getPin().equals(p)) {
                 System.out.println("You have successfully logged in!\n");
                 menu = true;
             }
@@ -101,10 +134,47 @@ public class Main {
             }
         }while(option!=0);
     }
+    public static void createDatabase(String fileName) {
 
-    public static void setCardsAndPins(String cardNum, String pin) {
-        accountInfo.add(cardNum);
-        accountInfo.add(pin);
+        // Connection string
+
+        String url = "jdbc:sqlite:" + fileName;
+
+        try (Connection conn = DriverManager.getConnection(url)) {
+            if (conn != null) {
+                DatabaseMetaData meta = conn.getMetaData();
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public static void createTable(String fileName) {
+
+        // Connection string
+
+        String url = "jdbc:sqlite:" + fileName;
+
+        // Creating table
+
+        String sql = "CREATE TABLE IF NOT EXISTS card (" +
+                "  `id` INTEGER NOT NULL PRIMARY KEY," +
+                "  `number` TEXT," +
+                "  `pin` TEXT," +
+                "  `balance` INTEGER DEFAULT 0"
+                + ");";
+
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement()) {
+
+            // Create new table
+
+            stmt.execute(sql);
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
 

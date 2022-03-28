@@ -40,6 +40,13 @@ public class CreditCard {
         return pin;
     }
 
+    public static String getCardNum() {
+        return cardNum;
+    }
+
+    public static String getPin() {
+        return pin;
+    }
 }
 
 
